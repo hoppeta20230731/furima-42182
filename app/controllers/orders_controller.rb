@@ -1,11 +1,14 @@
 class OrdersController < ApplicationController
+  before_action :authenticate_user!, only: [:index, :create]
+  before_action :set_item, only: [:index, :create]
+  before_action :check_owner, only: [:index, :create]
+  before_action :check_sold, only: [:index, :create]
+
   def index
-    @item = Item.find(params[:item_id])
     @order_shipping_address = OrderShippingAddress.new
   end
 
   def create
-    @item = Item.find(params[:item_id])
     @order_shipping_address = OrderShippingAddress.new(order_params)
     if @order_shipping_address.valid?
       @order_shipping_address.save
@@ -16,6 +19,22 @@ class OrdersController < ApplicationController
   end
 
   private
+
+  def set_item
+    @item = Item.find(params[:item_id])
+  end
+
+  def check_owner
+    return unless current_user == @item.user
+
+    redirect_to root_path
+  end
+
+  def check_sold
+    return unless @item.order.present?
+
+    redirect_to root_path
+  end
 
   def order_params
     params.require(:order_shipping_address).permit(:postal_code, :prefecture_id, :city, :street_address, :building_name, :phone_number).merge(
