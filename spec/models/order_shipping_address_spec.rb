@@ -34,7 +34,7 @@ RSpec.describe OrderShippingAddress, type: :model do
         @order_shipping_address.valid?
         expect(@order_shipping_address.errors.full_messages).to include("Prefecture can't be blank")
       end
-      it 'prefecture_idが1では登録できない' do
+      it 'prefecture_idが1では購入できない' do
         @order_shipping_address.prefecture_id = 1
         @order_shipping_address.valid?
         expect(@order_shipping_address.errors.full_messages).to include('Prefecture は選択してください')
@@ -78,6 +78,11 @@ RSpec.describe OrderShippingAddress, type: :model do
         @order_shipping_address.item_id = nil
         @order_shipping_address.valid?
         expect(@order_shipping_address.errors.full_messages).to include("Item can't be blank")
+      end
+      it 'tokenが空では購入できない' do
+        @order_shipping_address.token = nil
+        @order_shipping_address.valid?
+        expect(@order_shipping_address.errors.full_messages).to include("Token can't be blank")
       end
     end
   end
